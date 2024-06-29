@@ -13,12 +13,30 @@ except Exception as e:
 else:
     root = Root.model_validate_json(data_str)
     data = root.model_dump()
+    areas:list[str] = list(set(map(lambda value:value['行政區'],data)))
 
-    def ijk(value):
-        return value['行政區']
+    st.title("台北市YOUBIKE各行政區站點資料")
+    tableContainer = st.container(height=500,border=False)
 
-    areas:list[str] = list(set(map(ijk,data)))
 
-    option = st.selectbox("請選擇行政區",areas)
-    st.write("您選擇:", option)
+    def area_change():
+        sarea_name = st.session_state.sarea
+        #st.write(sarea_name)
+        display_data = []
+        for item in data:
+            if item["行政區"] == sarea_name:
+                display_data.append(item)
+        with tableContainer:
 
+            st.subheader(sarea_name)
+            st.table(data=display_data)
+
+
+
+   
+
+    with st.sidebar:
+        st.selectbox(":orange[請選擇行政區域:]",options=areas,on_change=area_change,key='sarea')
+
+
+        
